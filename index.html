@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5-Day Dumbbell Program</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #111214;
+    --surface: #18191d;
+    --surface2: #1f2025;
+    --border: #2a2b30;
+    --border2: #333440;
+    --accent: #00e5ff;
+    --accent-dim: rgba(0,229,255,0.08);
+    --accent2: #ff4d6d;
+    --accent3: #ffe066;
+    --text: #ecedf0;
+    --muted: #7a7d8a;
+    --done-bg: #0d1a1e;
+    --done-border: #0e3040;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Lato', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* === HEADER === */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 22px 28px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+  }
+
+  .brand h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .brand p {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 3px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .stat-block {
+    text-align: center;
+  }
+
+  .stat-block .val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-block .lbl {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 36px;
+    background: var(--border);
+  }
+
+  /* === WEEK PROGRESS BAR === */
+  .week-bar-wrap {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .week-bar-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+
+  .week-bar-track {
+    flex: 1;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .week-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), #00b8cc);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .week-bar-pct {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* === DAY TABS === */
+  .day-tabs {
+    display: flex;
+    padding: 18px 28px 0;
+    gap: 3px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+
+  .day-tabs::-webkit-scrollbar { display: none; }
+
+  .day-tab {
+    flex-shrink: 0;
+    padding: 11px 18px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    bottom: -1px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .day-tab .tab-day-num {
+    font-size: 18px;
+    line-height: 1;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+
+  .day-tab .tab-focus {
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    color: #444;
+    transition: color 0.2s;
+  }
+
+  .day-tab:hover { color: var(--text); border-color: #3a3b42; }
+  .day-tab:hover .tab-day-num { color: var(--text); }
+  .day-tab:hover .tab-focus { color: var(--muted); }
+
+  .day-tab.active {
+    background: var(--bg);
+    border-color: var(--border);
+    border-bottom-color: var(--bg);
+    color: var(--accent);
+  }
+
+  .day-tab.active .tab-day-num { color: var(--accent); }
+  .day-tab.active .tab-focus { color: var(--accent); opacity: 0.7; }
+
+  .day-tab .tab-dots {
+    display: flex;
+    gap: 3px;
+    margin-top: 3px;
+  }
+
+  .tab-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--border2);
+    transition: background 0.3s;
+  }
+
+  .tab-dot.done { background: var(--accent); }
+
+  /* === DAY CONTENT === */
+  .day-content { display: none; padding: 24px 28px; max-width: 860px; }
+  .day-content.active { display: block; animation: fadeUp 0.3s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .day-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .day-title-block {}
+
+  .day-title-block .day-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .day-title-block h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .day-title-block h2 span { color: var(--accent); }
+
+  .day-title-block .muscle-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .muscle-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 3px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(0,229,255,0.2);
+    color: var(--accent);
+  }
+
+  .day-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* === SECTION LABELS === */
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .info-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 11px 15px;
+    font-size: 13px;
+    color: #aaa;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* === EXERCISE CARDS === */
+  .exercises { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+
+  .exercise-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .exercise-card:hover { border-color: var(--border2); }
+  .exercise-card.completed { background: var(--done-bg); border-color: var(--done-border); }
+
+  .exercise-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .check-box {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border2);
+    border-radius: 5px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .exercise-card.completed .check-box {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .check-box svg { display: none; }
+  .exercise-card.completed .check-box svg { display: block; }
+
+  .exercise-info { flex: 1; min-width: 0; }
+
+  .exercise-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+    transition: color 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .exercise-card.completed .exercise-name {
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: #2a3a3e;
+  }
+
+  .exercise-meta {
+    display: flex;
+    gap: 6px;
+    margin-top: 5px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .meta-pill {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+
+  .meta-pill.sets {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    color: var(--muted);
+  }
+
+  .meta-pill.reps {
+    background: rgba(0,229,255,0.07);
+    border: 1px solid rgba(0,229,255,0.2);
+    color: var(--accent);
+  }
+
+  .meta-pill.knee {
+    background: rgba(255,77,109,0.08);
+    border: 1px solid rgba(255,77,109,0.2);
+    color: var(--accent2);
+  }
+
+  .expand-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+  }
+
+  .expand-btn:hover { color: var(--text); border-color: var(--border2); }
+
+  .expand-icon {
+    width: 12px;
+    height: 12px;
+    transition: transform 0.25s ease;
+  }
+
+  .exercise-card.expanded .expand-icon { transform: rotate(180deg); }
+
+  .exercise-notes {
+    display: none;
+    margin: 0 16px 16px 50px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #b0b3bc;
+    line-height: 1.8;
+    font-weight: 300;
+    background: var(--surface2);
+    border-radius: 6px;
+    border-left: 2px solid var(--accent);
+  }
+
+  .exercise-card.expanded .exercise-notes { display: block; }
+
+  /* === TIPS === */
+  .tips-section {
+    margin-top: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent3);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+
+  .tips-section h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 12px;
+  }
+
+  .tip {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 13px;
+    color: #aaa;
+    line-height: 1.65;
+    margin-bottom: 8px;
+    font-weight: 300;
+  }
+
+  .tip:last-child { margin-bottom: 0; }
+  .tip-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent3); margin-top: 8px; flex-shrink: 0; }
+
+  @media (max-width: 600px) {
+    .header { padding: 16px 16px; }
+    .week-bar-wrap { padding: 10px 16px; }
+    .day-tabs { padding: 14px 16px 0; }
+    .day-content { padding: 18px 16px; }
+    .exercise-notes { margin-left: 16px; }
+    .header-stats { gap: 12px; }
+    .stat-block .val { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">
+    <h1>5-Day Program</h1>
+    <p>Dumbbell + Bench · Fat Loss & Tone · 45–60 min</p>
+  </div>
+  <div class="header-stats">
+    <div class="stat-block">
+      <div class="val" id="statCompleted">0</div>
+      <div class="lbl">Done</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-block">
+      <div class="val" id="statTotal">32</div>
+      <div class="lbl">Total</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-block">
+      <div class="val" id="statDays">0/5</div>
+      <div class="lbl">Days</div>
+    </div>
+  </div>
+</div>
+
+<div class="week-bar-wrap">
+  <div class="week-bar-label">Week Progress</div>
+  <div class="week-bar-track">
+    <div class="week-bar-fill" id="weekBarFill"></div>
+  </div>
+  <div class="week-bar-pct" id="weekBarPct">0%</div>
+</div>
+
+<div class="day-tabs">
+  <div class="day-tab active" onclick="switchDay(1)" id="tab1">
+    <div class="tab-day-num">D1</div>
+    <div class="tab-focus">Push</div>
+    <div class="tab-dots" id="tabdots1"></div>
+  </div>
+  <div class="day-tab" onclick="switchDay(2)" id="tab2">
+    <div class="tab-day-num">D2</div>
+    <div class="tab-focus">Pull</div>
+    <div class="tab-dots" id="tabdots2"></div>
+  </div>
+  <div class="day-tab" onclick="switchDay(3)" id="tab3">
+    <div class="tab-day-num">D3</div>
+    <div class="tab-focus">Legs</div>
+    <div class="tab-dots" id="tabdots3"></div>
+  </div>
+  <div class="day-tab" onclick="switchDay(4)" id="tab4">
+    <div class="tab-day-num">D4</div>
+    <div class="tab-focus">Upper</div>
+    <div class="tab-dots" id="tabdots4"></div>
+  </div>
+  <div class="day-tab" onclick="switchDay(5)" id="tab5">
+    <div class="tab-day-num">D5</div>
+    <div class="tab-focus">Full Body</div>
+    <div class="tab-dots" id="tabdots5"></div>
+  </div>
+</div>
+
+<!-- ===== DAY 1: PUSH ===== -->
+<div class="day-content active" id="day1">
+  <div class="day-header">
+    <div class="day-title-block">
+      <div class="day-label">Day 1</div>
+      <h2>Push <span>Day</span></h2>
+      <div class="muscle-tags">
+        <span class="muscle-tag">Chest</span>
+        <span class="muscle-tag">Shoulders</span>
+        <span class="muscle-tag">Triceps</span>
+      </div>
+    </div>
+    <div class="day-actions">
+      <button class="reset-btn" onclick="resetDay(1)">↺ Reset</button>
+    </div>
+  </div>
+
+  <div class="section-label">Warm-up — 5 min</div>
+  <div class="info-bar">Arm circles · Shoulder rolls · Light push-ups · Torso twists</div>
+
+  <div class="section-label">Exercises</div>
+  <div class="exercises">
+
+    <div class="exercise-card" id="d1e1">
+      <div class="exercise-header" onclick="toggleExpand('d1e1')">
+        <div class="check-box" onclick="toggleCheck(event,'d1e1')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Dumbbell Bench Press</div>
+          <div class="exercise-meta"><span class="meta-pill sets">4 sets</span><span class="meta-pill reps">10–12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Lie flat on the bench with a dumbbell in each hand, held at chest level. Elbows should be at about 45° from your body — not flared straight out. Press the dumbbells up until your arms are fully extended, then lower slowly back to chest level with control. Keep your feet flat on the floor, core tight, and a slight natural arch in your lower back. This is your primary chest builder now that you have the bench.</div>
+    </div>
+
+    <div class="exercise-card" id="d1e2">
+      <div class="exercise-header" onclick="toggleExpand('d1e2')">
+        <div class="check-box" onclick="toggleCheck(event,'d1e2')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Incline Dumbbell Press</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">10–12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Set your bench to a 30–45° incline. Sit back with a dumbbell in each hand at shoulder level. Press straight up overhead until arms are extended, then lower slowly. The incline shifts the focus to the upper portion of your chest, which is often underdeveloped. Don't go too steep — past 45° it becomes more of a shoulder press. Keep the motion smooth and controlled.</div>
+    </div>
+
+    <div class="exercise-card" id="d1e3">
+      <div class="exercise-header" onclick="toggleExpand('d1e3')">
+        <div class="check-box" onclick="toggleCheck(event,'d1e3')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Seated Dumbbell Shoulder Press</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">10–12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Sit upright on the bench (or set it to 90°) with a dumbbell in each hand at ear/shoulder height, elbows bent at 90° and palms facing forward. Press both dumbbells straight up until arms are nearly extended, then lower slowly back to the start. Seated removes the temptation to use your legs or lean back, making this stricter and safer for your lower back. Core stays braced throughout.</div>
+    </div>
+
+    <div class="exercise-card" id="d1e4">
+      <div class="exercise-header" onclick="toggleExpand('d1e4')">
+        <div class="check-box" onclick="toggleCheck(event,'d1e4')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Lateral Raises</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">12–15 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Stand with a dumbbell in each hand at your sides, palms facing in. With a slight bend in the elbows, raise both arms out to the sides until they reach shoulder height — like you're pouring pitchers of water at the top. Lower slowly. Don't shrug your shoulders up or swing the weight. Use much lighter weight than you think — this isolates a small muscle (medial delt) and form breaks down fast with too much load.</div>
+    </div>
+
+    <div class="exercise-card" id="d1e5">
+      <div class="exercise-header" onclick="toggleExpand('d1e5')">
+        <div class="check-box" onclick="toggleCheck(event,'d1e5')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Tricep Overhead Extension</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Sit on the bench and hold a single dumbbell with both hands, gripping the top plate. Raise it overhead until your arms are extended. Keeping your upper arms still and pointing straight up, slowly lower the dumbbell behind your head by bending at the elbows. Feel the stretch in the triceps at the bottom, then press back up. Keep your elbows from flaring out excessively — point them forward slightly.</div>
+    </div>
+
+    <div class="exercise-card" id="d1e6">
+      <div class="exercise-header" onclick="toggleExpand('d1e6')">
+        <div class="check-box" onclick="toggleCheck(event,'d1e6')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Tricep Kickbacks</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Hinge forward at the hips until your torso is roughly parallel to the floor. Hold a dumbbell in each hand, elbows bent at 90° and tucked tight to your sides — upper arms parallel to the floor. Extend your forearms straight back until arms are fully extended, squeezing the tricep at the top. Lower slowly. Only your forearms move — upper arms stay completely pinned. Great finishing move for the triceps after the overhead extension.</div>
+    </div>
+
+  </div>
+
+  <div class="section-label">Cool-down — 5 min</div>
+  <div class="info-bar">Doorway chest stretch · Cross-body shoulder stretch · Overhead tricep stretch · Child's pose</div>
+
+  <div class="tips-section">
+    <h3>Day 1 Tips</h3>
+    <div class="tip"><div class="tip-dot"></div><div>Rest 60–90 seconds between sets. For fat loss, keep rest on the shorter end.</div></div>
+    <div class="tip"><div class="tip-dot"></div><div>The bench press and incline press are your two biggest calorie-burning moves today — don't rush through them.</div></div>
+    <div class="tip"><div class="tip-dot"></div><div>Stop 1–2 reps before failure on every set. You have 5 days to get through — don't burn out on day one.</div></div>
+  </div>
+</div>
+
+<!-- ===== DAY 2: PULL ===== -->
+<div class="day-content" id="day2">
+  <div class="day-header">
+    <div class="day-title-block">
+      <div class="day-label">Day 2</div>
+      <h2>Pull <span>Day</span></h2>
+      <div class="muscle-tags">
+        <span class="muscle-tag">Back</span>
+        <span class="muscle-tag">Biceps</span>
+        <span class="muscle-tag">Rear Delts</span>
+      </div>
+    </div>
+    <div class="day-actions"><button class="reset-btn" onclick="resetDay(2)">↺ Reset</button></div>
+  </div>
+
+  <div class="section-label">Warm-up — 5 min</div>
+  <div class="info-bar">Torso twists · Arm swings · Shoulder rolls · Light bodyweight rows</div>
+
+  <div class="section-label">Exercises</div>
+  <div class="exercises">
+
+    <div class="exercise-card" id="d2e1">
+      <div class="exercise-header" onclick="toggleExpand('d2e1')">
+        <div class="check-box" onclick="toggleCheck(event,'d2e1')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Dumbbell Bent-Over Row</div>
+          <div class="exercise-meta"><span class="meta-pill sets">4 sets</span><span class="meta-pill reps">10–12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Stand with feet shoulder-width apart, a dumbbell in each hand. Hinge forward at the hips with a flat back until your torso is at about 45°. Let the dumbbells hang with arms straight, then pull both up toward your hips/lower ribcage by driving your elbows back and squeezing your shoulder blades together at the top. Lower slowly. Flat back is non-negotiable — a rounded back under load risks injury.</div>
+    </div>
+
+    <div class="exercise-card" id="d2e2">
+      <div class="exercise-header" onclick="toggleExpand('d2e2')">
+        <div class="check-box" onclick="toggleCheck(event,'d2e2')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Single-Arm Dumbbell Row</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">10–12 each side</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Place one hand and the same-side knee on the bench for support, body parallel to the floor. Hold a dumbbell in your free hand, arm hanging straight down. Pull the dumbbell up toward your hip, leading with your elbow. Let your arm fully extend at the bottom to get a good lat stretch. The bench support means you can use heavier weight and really isolate each side — great for fixing left/right imbalances.</div>
+    </div>
+
+    <div class="exercise-card" id="d2e3">
+      <div class="exercise-header" onclick="toggleExpand('d2e3')">
+        <div class="check-box" onclick="toggleCheck(event,'d2e3')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Dumbbell Pullover</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Lie across the bench (upper back on the bench, hips dropped and feet flat on the floor) or lengthwise — either works. Hold one dumbbell with both hands above your chest, arms slightly bent. Lower it slowly back over your head toward the floor, feeling a deep stretch through your lats and chest. Pull it back up over your chest. The bench gives you a much greater range of motion than the floor version — you'll really feel the lats open up.</div>
+    </div>
+
+    <div class="exercise-card" id="d2e4">
+      <div class="exercise-header" onclick="toggleExpand('d2e4')">
+        <div class="check-box" onclick="toggleCheck(event,'d2e4')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Bicep Curl</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">10–12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Stand with a dumbbell in each hand, arms at your sides, palms facing forward. Keeping elbows pinned to your sides, curl both dumbbells up toward your shoulders. Squeeze the biceps hard at the top, then lower over 2–3 seconds — the slow descent is where a lot of the toning work happens. Don't swing your torso or let elbows drift forward. Alternate one arm at a time if that feels more controlled.</div>
+    </div>
+
+    <div class="exercise-card" id="d2e5">
+      <div class="exercise-header" onclick="toggleExpand('d2e5')">
+        <div class="check-box" onclick="toggleCheck(event,'d2e5')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Hammer Curl</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">10–12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Same starting position as a regular curl but rotate your palms so they face each other — like you're gripping hammer handles. Curl up keeping elbows at your sides. This variation shifts emphasis to the brachialis (underneath the bicep) and the forearm, which adds thickness to the arm. A great complement to standard curls — do these right after while your arms are still warm.</div>
+    </div>
+
+    <div class="exercise-card" id="d2e6">
+      <div class="exercise-header" onclick="toggleExpand('d2e6')">
+        <div class="check-box" onclick="toggleCheck(event,'d2e6')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Rear Delt Fly</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">12–15 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Hinge forward at the hips with a flat back until your torso is nearly parallel to the floor. Hold a light dumbbell in each hand, arms hanging straight down with a slight elbow bend. Raise both arms out to the sides in a wide arc, squeezing your shoulder blades together at the top. Lower slowly. This targets the rear deltoids and upper back — muscles that are chronically weak in most people and key for posture. Use very light weight.</div>
+    </div>
+
+  </div>
+
+  <div class="section-label">Cool-down — 5 min</div>
+  <div class="info-bar">Child's pose · Cross-body shoulder stretch · Lat stretch (grab bench) · Doorway chest stretch</div>
+
+  <div class="tips-section">
+    <h3>Day 2 Tips</h3>
+    <div class="tip"><div class="tip-dot"></div><div>The single-arm row lets you go heavier than bent-over rows — use that to your advantage.</div></div>
+    <div class="tip"><div class="tip-dot"></div><div>For the rear delt fly, lighter is better — form collapses fast with too much weight.</div></div>
+    <div class="tip"><div class="tip-dot"></div><div>Focus on squeezing the muscle at the top of each pull movement — that mind-muscle connection drives toning results.</div></div>
+  </div>
+</div>
+
+<!-- ===== DAY 3: LEGS ===== -->
+<div class="day-content" id="day3">
+  <div class="day-header">
+    <div class="day-title-block">
+      <div class="day-label">Day 3</div>
+      <h2>Legs <span>Day</span></h2>
+      <div class="muscle-tags">
+        <span class="muscle-tag">Glutes</span>
+        <span class="muscle-tag">Hamstrings</span>
+        <span class="muscle-tag">Core</span>
+        <span class="muscle-tag" style="background:rgba(255,77,109,0.08);border-color:rgba(255,77,109,0.2);color:var(--accent2)">Knee-Friendly</span>
+      </div>
+    </div>
+    <div class="day-actions"><button class="reset-btn" onclick="resetDay(3)">↺ Reset</button></div>
+  </div>
+
+  <div class="section-label">Warm-up — 5 min</div>
+  <div class="info-bar">Hip circles · Leg swings · Bodyweight glute bridges · Ankle rolls</div>
+
+  <div class="section-label">Exercises</div>
+  <div class="exercises">
+
+    <div class="exercise-card" id="d3e1">
+      <div class="exercise-header" onclick="toggleExpand('d3e1')">
+        <div class="check-box" onclick="toggleCheck(event,'d3e1')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Romanian Deadlift</div>
+          <div class="exercise-meta"><span class="meta-pill sets">4 sets</span><span class="meta-pill reps">10–12 reps</span><span class="meta-pill knee">Low knee stress</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Stand with feet hip-width apart, dumbbells in front of your thighs, palms facing you. With a soft passive bend in the knees, push your hips back and hinge forward, letting the dumbbells slide down your legs. Keep your back flat and chest up. Lower until you feel a strong hamstring stretch — usually around mid-shin. Drive your hips forward to stand back up. This is a hip hinge, not a squat — the knee bend is minimal and doesn't load the knee joint.</div>
+    </div>
+
+    <div class="exercise-card" id="d3e2">
+      <div class="exercise-header" onclick="toggleExpand('d3e2')">
+        <div class="check-box" onclick="toggleCheck(event,'d3e2')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Dumbbell Glute Bridge</div>
+          <div class="exercise-meta"><span class="meta-pill sets">4 sets</span><span class="meta-pill reps">12–15 reps</span><span class="meta-pill knee">Knee-friendly</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Lie on your back with knees bent and feet flat on the floor, hip-width apart. Place a dumbbell across your hips and hold it in place with both hands. Drive through your heels to lift your hips up toward the ceiling, squeezing your glutes hard at the top. Your body should form a straight line from knees to shoulders at the top. Lower slowly and repeat. This is one of the best glute exercises — the knee bend is comfortable and the load goes through the hips, not the knees.</div>
+    </div>
+
+    <div class="exercise-card" id="d3e3">
+      <div class="exercise-header" onclick="toggleExpand('d3e3')">
+        <div class="check-box" onclick="toggleCheck(event,'d3e3')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Single-Leg Romanian Deadlift</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">10 each side</span><span class="meta-pill knee">Low knee stress</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Hold a dumbbell in each hand and stand on one leg. Hinge forward at the hips, letting your back leg lift behind you as a counterbalance, while lowering the dumbbells toward the floor. Keep your hips square to the floor — don't let them rotate open. Return to standing by squeezing the glute of the standing leg. This challenges balance, fires up the glute, and really isolates each side. Start light — it's harder than it looks.</div>
+    </div>
+
+    <div class="exercise-card" id="d3e4">
+      <div class="exercise-header" onclick="toggleExpand('d3e4')">
+        <div class="check-box" onclick="toggleCheck(event,'d3e4')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Dumbbell Hip Thrust (Bench)</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">12–15 reps</span><span class="meta-pill knee">Knee-friendly</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Sit on the floor with your upper back resting against the side edge of the bench, knees bent, feet flat on the floor. Place a dumbbell across your hips. Drive through your heels to thrust your hips up until your body forms a straight line from shoulders to knees. Squeeze the glutes hard at the top and hold for a second. Lower slowly. The bench elevation gives you a greater range of motion than a floor bridge — this is a serious glute developer.</div>
+    </div>
+
+    <div class="exercise-card" id="d3e5">
+      <div class="exercise-header" onclick="toggleExpand('d3e5')">
+        <div class="check-box" onclick="toggleCheck(event,'d3e5')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Standing Calf Raise</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">15–20 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Stand with a dumbbell in each hand, feet hip-width apart. Rise up onto the balls of your feet as high as you can, squeezing the calves at the top. Lower slowly back down — go all the way down for a full stretch if you can. Calves respond well to higher reps and time under tension, so move slowly and deliberately rather than bouncing through these. You can stand on the edge of a step for extra range of motion if available.</div>
+    </div>
+
+    <div class="exercise-card" id="d3e6">
+      <div class="exercise-header" onclick="toggleExpand('d3e6')">
+        <div class="check-box" onclick="toggleCheck(event,'d3e6')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Dead Bug</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">8–10 each side</span><span class="meta-pill knee">Zero knee stress</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Lie flat on your back with arms extended toward the ceiling and knees bent at 90° above your hips. Press your lower back firmly into the floor and don't let it leave. Slowly lower your right arm overhead while extending your left leg out straight, hovering both just above the floor. Return to start and repeat on the other side. Move deliberately — if your lower back lifts off the floor, you've gone too far. This is a core stability essential that supports all your other lifts.</div>
+    </div>
+
+  </div>
+
+  <div class="section-label">Cool-down — 5 min</div>
+  <div class="info-bar">Standing hamstring stretch · Kneeling hip flexor stretch · Pigeon pose · Seated figure-four stretch</div>
+
+  <div class="tips-section">
+    <h3>Day 3 Tips</h3>
+    <div class="tip"><div class="tip-dot"></div><div>Every exercise here avoids loading your knee joint — this is a full leg day that works around your runner's knee.</div></div>
+    <div class="tip"><div class="tip-dot"></div><div>If anything causes knee discomfort, stop immediately. The glute bridge and hip thrust should feel completely fine.</div></div>
+    <div class="tip"><div class="tip-dot"></div><div>Really focus on squeezing the glutes at the top of every bridge and thrust — that's where the work happens.</div></div>
+  </div>
+</div>
+
+<!-- ===== DAY 4: UPPER ===== -->
+<div class="day-content" id="day4">
+  <div class="day-header">
+    <div class="day-title-block">
+      <div class="day-label">Day 4</div>
+      <h2>Upper <span>Day</span></h2>
+      <div class="muscle-tags">
+        <span class="muscle-tag">Chest</span>
+        <span class="muscle-tag">Back</span>
+        <span class="muscle-tag">Shoulders</span>
+        <span class="muscle-tag">Arms</span>
+      </div>
+    </div>
+    <div class="day-actions"><button class="reset-btn" onclick="resetDay(4)">↺ Reset</button></div>
+  </div>
+
+  <div class="section-label">Warm-up — 5 min</div>
+  <div class="info-bar">Arm circles · Torso twists · Light rows · Shoulder rolls</div>
+
+  <div class="section-label">Exercises</div>
+  <div class="exercises">
+
+    <div class="exercise-card" id="d4e1">
+      <div class="exercise-header" onclick="toggleExpand('d4e1')">
+        <div class="check-box" onclick="toggleCheck(event,'d4e1')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Dumbbell Bench Press</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">10–12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Flat bench, elbows at 45°, press up and lower slowly. Same as Day 1 but one fewer set — this is a balanced upper day, so you're hitting both push and pull rather than going all-in on one. Keep it controlled and focus on the chest squeeze at the top rather than just moving the weight.</div>
+    </div>
+
+    <div class="exercise-card" id="d4e2">
+      <div class="exercise-header" onclick="toggleExpand('d4e2')">
+        <div class="check-box" onclick="toggleCheck(event,'d4e2')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Dumbbell Bent-Over Row</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">10–12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Paired directly after the bench press to balance pushing with pulling — this keeps your shoulders healthy over the long run. Hinge at the hips with a flat back, pull the dumbbells to your lower ribcage, and squeeze shoulder blades together at the top. Think of the row as the "antidote" to the bench press — equal push and pull volume is what keeps posture solid.</div>
+    </div>
+
+    <div class="exercise-card" id="d4e3">
+      <div class="exercise-header" onclick="toggleExpand('d4e3')">
+        <div class="check-box" onclick="toggleCheck(event,'d4e3')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Seated Dumbbell Shoulder Press</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">10–12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Sit upright on the bench with dumbbells at shoulder height, elbows at 90°, palms facing forward. Press straight up overhead, then lower slowly. Seated keeps it strict — no leg drive or lower back arch. Your shoulders should be getting more warmed up and strong by this point in the week, so you may find you can handle a bit more weight than Day 1.</div>
+    </div>
+
+    <div class="exercise-card" id="d4e4">
+      <div class="exercise-header" onclick="toggleExpand('d4e4')">
+        <div class="check-box" onclick="toggleCheck(event,'d4e4')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Dumbbell Shrugs</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">12–15 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Stand holding a dumbbell in each hand at your sides. Shrug your shoulders straight up toward your ears as high as possible, hold for a full second at the top, then lower slowly. No rolling — straight up, straight down. Shrugs train the trapezius, which supports your neck, upper back, and posture. A strong upper back is important for both aesthetics and everyday comfort.</div>
+    </div>
+
+    <div class="exercise-card" id="d4e5">
+      <div class="exercise-header" onclick="toggleExpand('d4e5')">
+        <div class="check-box" onclick="toggleCheck(event,'d4e5')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Incline Dumbbell Curl</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">10–12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Set the bench to a 45–60° incline and sit back against it with a dumbbell in each hand. Let your arms hang straight down behind you — this extended starting position gives the bicep a longer stretch than a standing curl. Curl both dumbbells up, keeping your upper arms vertical and elbows back. The incline position removes the ability to cheat with your body, making this one of the best pure bicep exercises you can do with dumbbells.</div>
+    </div>
+
+    <div class="exercise-card" id="d4e6">
+      <div class="exercise-header" onclick="toggleExpand('d4e6')">
+        <div class="check-box" onclick="toggleCheck(event,'d4e6')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Lateral Raises</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">12–15 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Stand with dumbbells at your sides, palms facing in. Raise both arms out to shoulder height with a slight elbow bend. Lower slowly. Light weight, strict form. By now in the week your delts have had a good amount of work — keep the weight conservative and focus on the burn rather than loading up.</div>
+    </div>
+
+    <div class="exercise-card" id="d4e7">
+      <div class="exercise-header" onclick="toggleExpand('d4e7')">
+        <div class="check-box" onclick="toggleCheck(event,'d4e7')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Plank</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">40 seconds</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Forearms on the floor, elbows under shoulders, body in a straight line from head to heels. Squeeze your glutes, brace your abs, and breathe steadily. Don't let your hips sag or pike up. Slightly longer than Day 1's 30 seconds — your core should be getting stronger by this point in the week. If 40 seconds is easy, push toward 50–60.</div>
+    </div>
+
+  </div>
+
+  <div class="section-label">Cool-down — 5 min</div>
+  <div class="info-bar">Doorway chest stretch · Lat stretch · Overhead tricep stretch · Cross-body shoulder stretch</div>
+
+  <div class="tips-section">
+    <h3>Day 4 Tips</h3>
+    <div class="tip"><div class="tip-dot"></div><div>This is a balanced upper day — equal push and pull keeps your shoulder joints healthy over time.</div></div>
+    <div class="tip"><div class="tip-dot"></div><div>The incline curl is a serious bicep builder — go lighter than you would for standing curls, the stretch position makes it much harder.</div></div>
+    <div class="tip"><div class="tip-dot"></div><div>You're near the end of the week — stay focused but don't push to failure. Save something for Day 5.</div></div>
+  </div>
+</div>
+
+<!-- ===== DAY 5: FULL BODY ===== -->
+<div class="day-content" id="day5">
+  <div class="day-header">
+    <div class="day-title-block">
+      <div class="day-label">Day 5</div>
+      <h2>Full <span>Body</span></h2>
+      <div class="muscle-tags">
+        <span class="muscle-tag">Everything</span>
+        <span class="muscle-tag">Compound</span>
+        <span class="muscle-tag">Fat Burn</span>
+      </div>
+    </div>
+    <div class="day-actions"><button class="reset-btn" onclick="resetDay(5)">↺ Reset</button></div>
+  </div>
+
+  <div class="section-label">Warm-up — 5 min</div>
+  <div class="info-bar">Jumping jacks · Arm swings · Torso twists · Hip circles · Shoulder rolls</div>
+
+  <div class="section-label">Exercises</div>
+  <div class="exercises">
+
+    <div class="exercise-card" id="d5e1">
+      <div class="exercise-header" onclick="toggleExpand('d5e1')">
+        <div class="check-box" onclick="toggleCheck(event,'d5e1')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Dumbbell Bench Press</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Flat bench press to open the session — moderate weight today, slightly higher reps (12) to keep the heart rate up and lean more toward the fat-burning end. Rest only 45–60 seconds after this before moving to the row. The shorter rest is intentional on this day — it's a full body circuit-style approach to maximize calorie burn.</div>
+    </div>
+
+    <div class="exercise-card" id="d5e2">
+      <div class="exercise-header" onclick="toggleExpand('d5e2')">
+        <div class="check-box" onclick="toggleCheck(event,'d5e2')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Bent-Over Row</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Superset this directly after the bench press with minimal rest between the two — this push/pull superset keeps blood moving and raises your heart rate significantly compared to resting between sets. Hinge forward, flat back, pull to lower ribcage, squeeze shoulder blades. Then rest 60–75 seconds before the next superset pair.</div>
+    </div>
+
+    <div class="exercise-card" id="d5e3">
+      <div class="exercise-header" onclick="toggleExpand('d5e3')">
+        <div class="check-box" onclick="toggleCheck(event,'d5e3')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Romanian Deadlift</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">12 reps</span><span class="meta-pill knee">Low knee stress</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">The biggest lower body movement of the day — hip hinge, flat back, soft knee bend only. This hits hamstrings and glutes hard while being completely knee-joint friendly. On this full body day it acts as your main leg compound. Drive through the hips to stand, squeeze the glutes at the top of each rep. Rest 60 seconds, then move to the shoulder press.</div>
+    </div>
+
+    <div class="exercise-card" id="d5e4">
+      <div class="exercise-header" onclick="toggleExpand('d5e4')">
+        <div class="check-box" onclick="toggleCheck(event,'d5e4')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Standing Dumbbell Shoulder Press</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">12 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Standing today instead of seated — the standing position recruits your core and stabilizer muscles significantly more, adding to the full-body calorie burn of this session. Feet shoulder-width apart, dumbbells at shoulder height, press overhead. Keep your core braced so you're not leaning back. This is one of the best full-body bang-for-your-buck movements you can do.</div>
+    </div>
+
+    <div class="exercise-card" id="d5e5">
+      <div class="exercise-header" onclick="toggleExpand('d5e5')">
+        <div class="check-box" onclick="toggleCheck(event,'d5e5')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Dumbbell Glute Bridge</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">15 reps</span><span class="meta-pill knee">Knee-friendly</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">On your back, dumbbell across your hips, feet flat on the floor. Drive through your heels and squeeze your glutes to lift your hips to a straight line. Hold for a full second at the top, then lower slowly. 15 reps today — slightly higher than Day 3 to push the glute endurance and keep the calorie burn going. This is your second lower body move of the day and a great active recovery piece after the deadlift.</div>
+    </div>
+
+    <div class="exercise-card" id="d5e6">
+      <div class="exercise-header" onclick="toggleExpand('d5e6')">
+        <div class="check-box" onclick="toggleCheck(event,'d5e6')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Hammer Curl to Press</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">10 reps</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Stand with dumbbells at your sides, palms facing each other. Curl both dumbbells up to shoulder height (hammer grip), then rotate your palms forward and press them overhead in one fluid motion. Lower back to shoulders, rotate palms back to facing each other, and lower to the start. This combination move hits your biceps, shoulders, and triceps in a single rep — great for fat loss because it recruits more muscle groups simultaneously and keeps the heart rate elevated.</div>
+    </div>
+
+    <div class="exercise-card" id="d5e7">
+      <div class="exercise-header" onclick="toggleExpand('d5e7')">
+        <div class="check-box" onclick="toggleCheck(event,'d5e7')"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#111214" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="exercise-info">
+          <div class="exercise-name">Plank</div>
+          <div class="exercise-meta"><span class="meta-pill sets">3 sets</span><span class="meta-pill reps">40 seconds</span></div>
+        </div>
+        <button class="expand-btn">Info <svg class="expand-icon" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="exercise-notes">Finish the week strong. Forearms down, elbows under shoulders, body straight from head to heels. Squeeze everything — glutes, abs, quads. Breathe slowly and hold. After 5 days of work, this plank is your victory lap. Push for the full 40 seconds on each set. If you've got more in the tank, go to 50 or 60.</div>
+    </div>
+
+  </div>
+
+  <div class="section-label">Cool-down — 5 min</div>
+  <div class="info-bar">Full body stretch: chest · lats · hamstrings · hip flexors · shoulders · lower back</div>
+
+  <div class="tips-section">
+    <h3>Day 5 Tips</h3>
+    <div class="tip"><div class="tip-dot"></div><div>Superset the bench press and row — go straight from one to the other with no rest. This is the key fat-burning technique for today.</div></div>
+    <div class="tip"><div class="tip-dot"></div><div>Keep rest periods to 45–60 seconds throughout this session — shorter rest = more calories burned.</div></div>
+    <div class="tip"><div class="tip-dot"></div><div>You made it through the week. Take 1–2 full rest days before starting again. Recovery is where the results actually happen.</div></div>
+  </div>
+</div>
+
+<script>
+  const dayExercises = { 1: 6, 2: 6, 3: 6, 4: 7, 5: 7 };
+  const totalExercises = Object.values(dayExercises).reduce((a,b) => a+b, 0);
+
+  function switchDay(day) {
+    document.querySelectorAll('.day-content').forEach(d => d.classList.remove('active'));
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('day' + day).classList.add('active');
+    document.getElementById('tab' + day).classList.add('active');
+  }
+
+  function toggleExpand(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('expanded');
+  }
+
+  function toggleCheck(event, id) {
+    event.stopPropagation();
+    const card = document.getElementById(id);
+    card.classList.toggle('completed');
+    updateProgress();
+  }
+
+  function resetDay(day) {
+    const dayEl = document.getElementById('day' + day);
+    dayEl.querySelectorAll('.exercise-card').forEach(card => {
+      card.classList.remove('completed', 'expanded');
+    });
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const completed = document.querySelectorAll('.exercise-card.completed').length;
+    const pct = Math.round((completed / totalExercises) * 100);
+
+    document.getElementById('statCompleted').textContent = completed;
+    document.getElementById('weekBarFill').style.width = pct + '%';
+    document.getElementById('weekBarPct').textContent = pct + '%';
+
+    // Count completed days
+    let completedDays = 0;
+    for (let d = 1; d <= 5; d++) {
+      const total = dayExercises[d];
+      const done = document.querySelectorAll(`#day${d} .exercise-card.completed`).length;
+      if (done === total) completedDays++;
+
+      // Update tab dots
+      const dotsEl = document.getElementById('tabdots' + d);
+      dotsEl.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'tab-dot' + (i < done ? ' done' : '');
+        dotsEl.appendChild(dot);
+      }
+    }
+
+    document.getElementById('statDays').textContent = completedDays + '/5';
+  }
+
+  // Init dots
+  updateProgress();
+</script>
+</body>
+</html>
